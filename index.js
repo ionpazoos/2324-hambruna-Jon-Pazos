@@ -13,6 +13,10 @@ const url = 'https://gist.githubusercontent.com/Oskar-Dam/62e7175dc542af53a9d18c
     ShowAverageCalories(data)
     ShowTotalSaturatedFat(data)
     ShowAverageVitaminPercentages(data)
+    //3-
+    ListDonutsWithBatters(data)
+    ListDonutsWithToppings(data)
+    CalculateDonutsWithCoins(data, 4)
   })
   .catch(error => {
     console.error('Error al obtener los datos:', error);
@@ -192,4 +196,53 @@ function ShowAverageVitaminPercentages(data) {
     console.log("El porcentaje medio de Calcium es " + averageCalcium + "%");
     console.log("El porcentaje medio de Iron es " + averageIron + "%");
 }
+function ListDonutsWithBatters(data) {
+    const donuts = data.items.item;
+
+    for (let i = 0; i < donuts.length; i++) {
+        const donutName = donuts[i].name;
+        const batters = donuts[i].batters.batter;
+        let batterList = [];
+        for (let j = 0; j < batters.length; j++) {
+            batterList.push(batters[j].type);
+        }
+        console.log("Donut: " + donutName);
+        console.log("Masas Disponibles: " + batterList);
+    }
+}
+function ListDonutsWithToppings(data) {
+    const donuts = data.items.item;
+
+    for (let i = 0; i < donuts.length; i++) {
+        const donutName = donuts[i].name;
+        const toppings = donuts[i].topping;
+        let toppingArray = [];
+        for (let j = 1; j < toppings.length; j++) {
+            toppingArray.push(toppings[j].type);
+        }
+        console.log(donutName + ":");
+        console.log(toppingArray);
+    }
+}
+function CalculateDonutsWithCoins(data, coins) {
+    const donuts = data.items.item;
+    let coinsRemaining = coins;
+
+    for (let i = 0; i < donuts.length; i++) {
+        while (coinsRemaining >= donuts[i].ppu) {
+            let pricePerDonut = donuts[i].ppu; 
+            const donutName = donuts[i].name;
+            const price = pricePerDonut;
+            const donutsCanBuy = Math.floor(coins / price);
+            const totalCost = donutsCanBuy * price;
+            coinsRemaining -= totalCost;
+            console.log(donutName + ":");
+            console.log("Puedes comprar: " + donutsCanBuy);
+            console.log("Monedas restantes: " + coinsRemaining);
+        }
+        coinsRemaining = 4;
+    }
+    
+}
+
 
