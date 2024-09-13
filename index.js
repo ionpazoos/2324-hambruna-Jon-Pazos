@@ -3,7 +3,7 @@ const axios = require('axios');
 getDonutsInformation();
 function getDonutsInformation(){
 const url = 'https://gist.githubusercontent.com/Oskar-Dam/62e7175dc542af53a9d18cb292422425/raw/a6cce2b68ea13a77ec5ea7bdfb4df8f23f9ae95f/donuts.json';
-    axios.get(url)
+axios.get(url)
   .then(response => {
     const data = response.data;
     //1-
@@ -16,7 +16,12 @@ const url = 'https://gist.githubusercontent.com/Oskar-Dam/62e7175dc542af53a9d18c
     //3-
     ListDonutsWithBatters(data)
     ListDonutsWithToppings(data)
+    //4-
     CalculateDonutsWithCoins(data, 4)
+    //5-
+    fixErrorsOnData(data)
+    listDonutsChanges(data)
+  
   })
   .catch(error => {
     console.error('Error al obtener los datos:', error);
@@ -244,5 +249,40 @@ function CalculateDonutsWithCoins(data, coins) {
     }
     
 }
+function fixErrorsOnData(data){
+    const donuts = data.items.item;
+    for (let i = 0; i < donuts.length; i++) {
+        if (parseInt(donuts[i].nutrition_facts.nutrition.cholesterol.amount.replace(/\D/g, ''), 10) > 12) {
+            donuts[i].nutrition_facts.nutrition.cholesterol.amount = "3.2g";
+        }
+        if (parseInt(donuts[i].nutrition_facts.nutrition.carbohydrate.carbs_detail.type.sugars.replace(/\D/g, ''), 10) > 50) {
+            donuts[i].nutrition_facts.nutrition.carbohydrate.carbs_detail.amount = "42g";
+        }
+        if(donuts[i].name === "Magic Fusion" ){
+            const nitacina = {
+                "type": "Nitacina",
+				"percent": "1%"
+            }
+            donuts[i].nutrition_facts.nutrition.vitamines.push(nitacina)
+        }
+        donuts[i].nutrition_facts.nutrition.carbohydrate.daily_value = "53%";
+        if(donuts[i].name === "Relaxing Alchemy" ){
+            donuts[i].nutrition_facts.nutrition.alergen = "gluten free"; 
+        }
+    }
+}
+function listDonutsChanges(data) {
+    const donuts = data.items.item;
+    for (let i = 0; i < donuts.length; i++) {
+        const donutName = donuts[i].name;
+        console.log(donuts[i].nutrition_facts.nutrition);
+        const carbs = donuts[i].nutrition_facts.nutrition.carbohydrate.carbs_detail.amount; 
+        const calories = donuts[i].nutrition_facts.nutrition.calories;
+        console.log(donutName + ":");
+        console.log("-" + carbs +  " de carbohidratos");
+        console.log("-" + calories +  " calorias");
+    }
+}
+
 
 
